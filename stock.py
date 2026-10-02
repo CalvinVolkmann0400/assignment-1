@@ -6,7 +6,7 @@ import yfinance as yf
 
 class Stock:
 
-    def __init__(self,symbol, start, end, ma_window=10, ma_window2=50):
+    def __init__(self,symbol, start, end, ma_window=10, ma_window2=200):
         self.symbol = symbol
         self.start = start
         self.end = end

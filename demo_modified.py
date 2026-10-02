@@ -25,8 +25,8 @@ mv_avg = st.sidebar.slider("Moving Average",
                            step= 1)
 mv_avg2 = st.sidebar.slider("Second Moving Average",
                             min_value= 0,
-                            max_value= 100,
-                            value= 20,
+                            max_value= 200,
+                            value= 200,
                             step= 1)
 run_analysis = st.sidebar.button("Run Analysis", type= "primary")
 
