@@ -13,12 +13,13 @@ col1, col2 = st.sidebar.columns(2)
 start_date = col1.date_input("Start Date", date.today() - timedelta(days=365))
 end_date = col2.date_input("End Date", date.today())
 ma_window = st.sidebar.slider("Moving Average", min_value=5, max_value=200, value=50)
+ma_window2 = st.sidebar.slider("Second Moving Average", min_value=5, max_value=200, value=200)
 run_analysis = st.sidebar.button("Run Analysis", type="primary")
 
 
 @st.cache_data
-def get_stock(ticker, start, end, ma_window):
-    return Stock(ticker, start, end, ma_window)
+def get_stock(ticker, start, end, ma_window, ma_window2):
+    return Stock(ticker, start, end, ma_window, ma_window2)
 
 
 tab1, tab2 = st.tabs(["Single Stock Analysis", "Portfolio Comparison"])
@@ -27,7 +28,7 @@ tickers = tab2.text_input("Enter ticker symbols separated by commas", value="AAP
 if run_analysis:
     with tab1:
         with st.spinner(f"Fetching {ticker} data..."):
-            stock = get_stock(ticker, start_date, end_date, ma_window)
+            stock = get_stock(ticker, start_date, end_date, ma_window, ma_window2)
         if stock.data is None:
             st.error(stock.message)
         else:
@@ -37,7 +38,8 @@ if run_analysis:
             col1.metric("Last Close", f"${df['Close'].iloc[-1]:.2f}")
             col2.metric("Cum. Return", f"{df['return'].sum():.2%}")
             col3.metric("Trading Days", len(df))
-            st.plotly_chart(px.line(df, y=["Close", "MA"], title=f"{ticker} Close and {ma_window}-Day Moving Average"))
+            st.plotly_chart(px.line(df, y=["Close", "MA", "MA2"],
+                                    title=f"{ticker} Close with {ma_window}- and {ma_window2}-Day Moving Averages"))
             st.plotly_chart(stock.plot_performance())
             st.plotly_chart(stock.plot_return_dist())
             st.subheader("Daily Return Statistics")
@@ -47,7 +49,7 @@ if run_analysis:
         performance = {}
         for symbol in [t.strip().upper() for t in tickers.split(",") if t.strip()]:
             with st.spinner(f"Fetching {symbol} data..."):
-                stock = get_stock(symbol, start_date, end_date, ma_window)
+                stock = get_stock(symbol, start_date, end_date, ma_window, ma_window2)
             if stock.data is None:
                 st.error(stock.message)
             else:

@@ -6,11 +6,12 @@ import yfinance as yf
 
 class Stock:
 
-    def __init__(self,symbol, start, end, ma_window=10 ):
+    def __init__(self,symbol, start, end, ma_window=10, ma_window2=50):
         self.symbol = symbol
         self.start = start
         self.end = end
         self.ma_window = ma_window
+        self.ma_window2 = ma_window2
         self.data, self.message = self.get_data()
 
     def get_data(self):
@@ -24,6 +25,7 @@ class Stock:
                 return None, f"No data for {self.symbol}"
             data = self._calc_returns(data)
             data = self._calc_ma(data, self.ma_window)
+            data = self._calc_ma(data, self.ma_window2, 'MA2')
             return data, f"Successfully downloaded for {self.symbol}"
         except Exception as e:
             return None, f"Failed due to {e}"
@@ -34,8 +36,8 @@ class Stock:
         return df.dropna()
 
 
-    def _calc_ma(self, df,window):
-        df['MA'] = df['Close'].rolling(window=window).mean()
+    def _calc_ma(self, df,window, col='MA'):
+        df[col] = df['Close'].rolling(window=window).mean()
         return df
 
     def plot_return_dist(self):

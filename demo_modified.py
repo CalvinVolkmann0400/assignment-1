@@ -23,6 +23,11 @@ mv_avg = st.sidebar.slider("Moving Average",
                            max_value= 100,
                            value= 50,
                            step= 1)
+mv_avg2 = st.sidebar.slider("Second Moving Average",
+                            min_value= 0,
+                            max_value= 100,
+                            value= 20,
+                            step= 1)
 run_analysis = st.sidebar.button("Run Analysis", type= "primary")
 
 def get_stock_data(ticker, start_date, end_date):
@@ -48,6 +53,7 @@ if run_analysis:
             st.stop()
 
         df['MA'] = df['Close'].rolling(window=mv_avg).mean()
+        df['MA2'] = df['Close'].rolling(window=mv_avg2).mean()
         df['pct_chg'] = df.Close.pct_change()
 
         with tab1:
@@ -58,7 +64,7 @@ if run_analysis:
             col3.metric("Trading Days", f"{df.Close.count()}")
 
 
-            fig = px.line(df, y=['Close', "MA"])
+            fig = px.line(df, y=['Close', "MA", "MA2"])
             fig.update_layout(hovermode='x unified')
             st.plotly_chart(fig, use_container_width=True)
 
